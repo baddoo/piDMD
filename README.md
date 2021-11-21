@@ -1,3 +1,0 @@
-# piDMD
-
-Coming soon!
