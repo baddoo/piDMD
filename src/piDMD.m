@@ -1,16 +1,17 @@
 %% Physics-informed dynamic mode decompositions
-
+%
 % Computes a dynamic mode decomposition when the solution matrix is
 % constrained to lie in a matrix manifold. 
 % The options available for the "method" so far are
 %
 % - "exact", "exactSVDS"
 % - "orthogonal"
-% - "uppertriangular#, "lowertriangular"
+% - "uppertriangular, "lowertriangular"
 % - "diagonal", "diagonalpinv", "diagonaltls", "symtridiagonal"
 % - "circulant", "circulantTLS", "BCCB", "BCCBtls", "BCCBskewsymmetric",
 % "BCCBunitary", "hankel", "toeplitz"
 % - "symmetric", "skewsymmetric"
+%
 function [A,varargout] = piDMD(X,Y,method,varargin)
 
 [nx, nt] = size(X);
@@ -163,7 +164,7 @@ elseif strcmp(method,'circulant') || strcmp(method,'circulantTLS')
  fX = fft(X); fY = fft(conj(Y));
 
  if strcmp(method,'circulant') 
-    d = diag(fX*fY').'./vecnorm(fX').^2;
+    d = diag(fX*fY')./vecnorm(fX,2,2).^2;
  elseif strcmp(method,'circulantTLS')
      d = zeros(nx,1);
     for j = 1:nx
@@ -178,7 +179,7 @@ elseif strcmp(method,'circulant') || strcmp(method,'circulantTLS')
  end
  eVals = d;
  varargout{1} = eVals;
- A = ifft(fft(diag(d)).').';
+ A = @(v) fft(d.*ifft(v));
 
 elseif strcmp(method,'BCCB') || strcmp(method,'BCCBtls') || strcmp(method,'BCCBskewsymmetric') || strcmp(method,'BCCBunitary')
     
