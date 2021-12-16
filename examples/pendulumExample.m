@@ -75,8 +75,8 @@ l2=plot(t,fpiRec(2,:),'b--',LW,2);
 l3=plot(t,fexRec(2,:),'r--',LW,2);
 hold off; xlabel('time',FS,20,IN,LT)
 trajPlot('$\theta_2$')
-legend([l1,l2,l3],{'truth','exactDMD','piDMD'},IN,LT)
-function yp = pendulum(t, y, params)
+legend([l1,l2,l3],{'truth','piDMD','exact DMD'},IN,LT)
+function yp = pendulum(~, y, params)
 
 l1=params(1);  l2=params(2); 
 m1=params(3);  m2=params(4); 
