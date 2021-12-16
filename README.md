@@ -9,7 +9,9 @@ The framework is described in the following schematic and reference
 </p>
 <br/>
 
+New examples and matrix manifolds will continue to be added. Please contact me if you have any questions or suggestions!
+
 ## Reference:
 _Physics-informed dynamic mode decomposition (piDMD)_  
 Peter J. Baddoo, Benjamin Herrmann, Beverley J. McKeon, Nathan J. Kutz & Steven L. Brunton  
-(coming soon)
+https://arxiv.org/abs/2112.04307
