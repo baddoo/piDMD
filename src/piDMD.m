@@ -63,7 +63,7 @@ elseif strcmp(method,'orthogonal')
     elseif nargout>2
         [eVecs,eVals] = eig(Aproj);
         varargout{1} = diag(eVals);
-        varargout{2} = Ux(:,1:r)*eVecs;
+        varargout{2} = Ux*eVecs;
         if nargout > 3; varargout{3} = Aproj; end
     end
     
