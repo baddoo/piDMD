@@ -7,7 +7,7 @@ The *dynamic mode decomposition* [2] is a data-driven method that
 2. identifies the linear operator that best represents the data.
 
 Previous works have sought linear operators that are low rank.
-While this approach has seen enormous success, it is well known that classical DMD models are highly sensitive to noise, overfit to data, and do not respect known physics. 
+While this approach has seen enormous success, it is well known that classical DMD models are highly sensitive to noise, prone to overfitting, and do not respect known physical laws. 
 Our recent paper [1] partially addresses these issues by incorporating prior known physics into the DMD procedure.
 Specifically, we rephrase the DMD optimization problem as
 
@@ -38,7 +38,7 @@ This is implemented by
 model = piDMD(X, Y, 'orthogonal')
 ```
 The learned model is the best such linear model; it is a solution to (1).
-Here, `model` is a function handle that takes vectors `v` as inputs and outputs the vector matrix product `A*v` where `A` is the learned model.
+Here, `model` is a function handle that takes vectors `v` as inputs and outputs the vector matrix product `A*v` where `A` is the learned orthogonal model.
 The reason for this design choice is that the learned `A` is often so large that we cannot store it explicitly in memory.
 If the model is desired explicitly then it can be formed by `model(eye(n))`, where `n` is the state dimension.
 Further, the eigenvalues and eigenvectors of the model can be computed by, for example,
@@ -82,6 +82,7 @@ To start using piDMD, simply clone this repository to your MATLAB directory.
 
 ## System requirements
 The codes are written in MATLAB and were tested in MATLAB 2021b on a 2021 Macbook Pro with Apple M1 chip,	8 cores and 16 GB of RAM.
+Each example should take a couple of seconds to run.
 
 ## References
 [1] [_Physics-informed dynamic mode decomposition (piDMD)_](https://arxiv.org/abs/2112.04307)   
