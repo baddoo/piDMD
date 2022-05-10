@@ -12,7 +12,7 @@
 % "BCCBunitary", "hankel", "toeplitz"
 % - "symmetric", "skewsymmetric"
 %
-function [A,varargout] = piDMD(X,Y,method,varargin)
+function [Afin, varargout] = piDMD(X,Y,method,varargin)
 
 [nx, nt] = size(X);
 
@@ -178,6 +178,9 @@ elseif strcmp(method,'circulant') || strcmp(method,'circulantTLS')
  end
  eVals = d;
  varargout{1} = eVals;
+ if nargout>2
+    varargout{2} = fft(eye(nx));
+ end
  A = @(v) fft(d.*ifft(v));
 
 elseif strcmp(method,'BCCB') || strcmp(method,'BCCBtls') || strcmp(method,'BCCBskewsymmetric') || strcmp(method,'BCCBunitary')
@@ -259,4 +262,8 @@ elseif strcmp(method,'symtridiagonal')
     A = spdiags(c(1:nx),0,nx,nx) + spdiags([0;c(nx+1:end)],1,nx,nx) + spdiags([c(nx+1:end); 0],-1,nx,nx);
 else
     error('The selected method doesn''t exist.');
+
 end
+
+% Wrap the final A so that its output have the right dimension:
+Afin = @(v) reshape(A(v(:)),size(v));
