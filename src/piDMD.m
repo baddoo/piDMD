@@ -158,20 +158,26 @@ elseif strcmp(method,'toeplitz') || strcmp(method,'hankel')
     newA = ifft(fft(diag(d)).').'; % Convert the eigenvalues into the circulant matrix
     A = newA(1:nx,1:nx)*J; % Extract the Toeplitz matrix from the circulant matrix
  
-elseif strcmp(method,'circulant') || strcmp(method,'circulantTLS')
+elseif startsWith(method,'circulant')
+    %|| strcmp(method,'circulantTLS') || strcmp(method,'circulantsymmetric') ...
+     %   || strcmp(method,'circulantunitary') || strcmp(method,'circulantskewsymmetric')
     
  fX = fft(X); fY = fft(conj(Y));
 
- if strcmp(method,'circulant') 
-    d = diag(fX*fY')./vecnorm(fX,2,2).^2;
- elseif strcmp(method,'circulantTLS')
-     d = zeros(nx,1);
-    for j = 1:nx
+ d = zeros(nx,1);
+    if endsWith(method,'TLS') % Solve in the total least squares sense     
+        for j = 1:nx
         d(j) = tls(fX(j,:)',fY(j,:)');
+        end
+    elseif ~endsWith(method,'TLS') % Solve the other cases
+    d = diag(fX*fY')./vecnorm(fX,2,2).^2;
+        if endsWith(method,'unitary'); d = exp(1i*angle(d));
+        elseif endsWith(method,'symmetric'); d = real(d);
+        elseif endsWith(method,'imaginary'); d = 1i*imag(d);
+        end
     end
- end
   eVals = d; % These are the eigenvalues
-  eVecs = fft(eye(nx));
+  eVecs = fft(eye(nx)); % These are the eigenvectors
  if nargin>3
     r = varargin{1}; % Rank constraint
     res = diag(abs(fX*fY'))./vecnorm(fX')'; % Identify least important eigenvalues
