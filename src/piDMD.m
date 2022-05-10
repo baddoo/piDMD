@@ -170,18 +170,19 @@ elseif strcmp(method,'circulant') || strcmp(method,'circulantTLS')
         d(j) = tls(fX(j,:)',fY(j,:)');
     end
  end
+  eVals = d; % These are the eigenvalues
+  eVecs = fft(eye(nx));
  if nargin>3
-    r = varargin{1};
-    res = diag(abs(fX*fY'))./vecnorm(fX')';
-    [~,idx] = mink(res,nx-r);
-    d(idx) = 0;
+    r = varargin{1}; % Rank constraint
+    res = diag(abs(fX*fY'))./vecnorm(fX')'; % Identify least important eigenvalues
+    [~,idx] = mink(res,nx-r); % Remove least important eigenvalues
+    d(idx) = 0; eVals(idx) = []; eVecs(:,idx) = [];
  end
- eVals = d;
- varargout{1} = eVals;
- if nargout>2
-    varargout{2} = fft(eye(nx));
- end
- A = @(v) fft(d.*ifft(v));
+
+ if nargout>1; varargout{1} = eVals; end
+ if nargout>2; varargout{2} = eVecs; end
+
+ A = @(v) fft(d.*ifft(v)); % Reconstruct the operator in terms of FFTs
 
 elseif strcmp(method,'BCCB') || strcmp(method,'BCCBtls') || strcmp(method,'BCCBskewsymmetric') || strcmp(method,'BCCBunitary')
     
