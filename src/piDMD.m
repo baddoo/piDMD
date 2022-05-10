@@ -12,7 +12,7 @@
 % "BCCBunitary", "hankel", "toeplitz"
 % - "symmetric", "skewsymmetric"
 %
-function [Afin, varargout] = piDMD(X,Y,method,varargin)
+function [A, varargout] = piDMD(X,Y,method,varargin)
 
 [nx, nt] = size(X);
 
@@ -264,6 +264,3 @@ else
     error('The selected method doesn''t exist.');
 
 end
-
-% Wrap the final A so that its output have the right dimension:
-Afin = @(v) reshape(A(v(:)),size(v));
