@@ -79,33 +79,48 @@ elseif strcmp(method,'lowertriangular')
     
     A = rot90(piDMD(flipud(X),flipud(Y),'uppertriangular'),2);
     
-elseif strcmp(method,'diagonal') || strcmp(method,'diagonaltls') || strcmp(method,'diagonalTik') || strcmp(method,'diagonalpinv')
+% The codes allows for matrices of variable banded width. The fourth input,
+% a 2xn matrix called d, specifies the upper and lower bounds of the
+% indices of the non-zero elements. The first column corresponds to the width of
+% the band below the diagonal and the second column is the width of the
+% band above. For example, a diagonal matrix would have d = ones(nx,2) and 
+% a tridiagonal matrix would have d = [2 2]+zeros(nx,2). If you only specify
+% d as a scalar then the algorithm converts the input to obtain a banded 
+% diagonal matrix of width d. 
+elseif startsWith(method,'diagonal') 
     if nargin>3
         d = varargin{1}; % arrange d into an nx-by-2 matrix
         if numel(d) == 1
             d = d*ones(nx,2);
         elseif numel(d) == nx
-                d = repmat(d,[1,2]);
+             d = repmat(d,[1,2]);
         elseif any(size(d)~=[nx,2])
             error('Diagonal number is not in an allowable format.')
         end
     else 
         d = ones(nx,2); % default is for a diagonal matrix
     end
-    A = zeros(nx);
+    Asparse = spalloc(nx,nx,sum(sum(abs(d))));
     for j = 1:nx
     l1 = max(j-(d(j,1)-1),1); l2 = min(j+(d(j,2)-1),nx);
-    Amat = X(l1:l2,:);
-    bvec = Y(j,:);
+    C = X(l1:l2,:); b = Y(j,:); % preparing to solve min||Cx-b|| along each row
     if strcmp(method,'diagonal')
-            sol = bvec/Amat;
+            sol = b/C;
     elseif strcmp(method,'diagonalpinv')
-            sol = bvec*pinv(Amat);
+            sol = b*pinv(C);
     elseif strcmp(method,'diagonaltls')
-            sol = tls(Amat.',bvec.').';
+            sol = tls(C.',b.').';
     end    
-    v = [zeros(1,l1-1) sol zeros(1,nx-l2)];
-    A(j,:) = v ;
+    Asparse(j,l1:l2) = sol;
+    end
+    A = @(v) Asparse*v;
+
+    if nargout==2
+        eVals = eigs(Asparse,nx);
+        varargout{1} = eVals;
+    elseif nargout>2
+        [eVecs, eVals] = eigs(Asparse,nx);
+        varargout{1} = diag(eVals); varargout{2} = eVecs;
     end
 
 elseif strcmp(method,'symmetric') || strcmp(method,'skewsymmetric')
