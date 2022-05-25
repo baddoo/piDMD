@@ -8,7 +8,9 @@
 % - "orthogonal"
 % - "uppertriangular, "lowertriangular"
 % - "diagonal", "diagonalpinv", "diagonaltls", "symtridiagonal"
-% - "circulant", "circulantTLS", "BCCB", "BCCBtls", "BCCBskewsymmetric",
+% - "circulant", "circulantTLS", "circulantunitary", "circulantsymmetric",
+% "circulantskewsymmetric"
+% - "BCCB", "BCCBtls", "BCCBskewsymmetric",
 % "BCCBunitary", "hankel", "toeplitz"
 % - "symmetric", "skewsymmetric"
 %
@@ -159,9 +161,7 @@ elseif strcmp(method,'toeplitz') || strcmp(method,'hankel')
     A = newA(1:nx,1:nx)*J; % Extract the Toeplitz matrix from the circulant matrix
  
 elseif startsWith(method,'circulant')
-    %|| strcmp(method,'circulantTLS') || strcmp(method,'circulantsymmetric') ...
-     %   || strcmp(method,'circulantunitary') || strcmp(method,'circulantskewsymmetric')
-    
+
  fX = fft(X); fY = fft(conj(Y));
 
  d = zeros(nx,1);
@@ -173,7 +173,7 @@ elseif startsWith(method,'circulant')
     d = diag(fX*fY')./vecnorm(fX,2,2).^2;
         if endsWith(method,'unitary'); d = exp(1i*angle(d));
         elseif endsWith(method,'symmetric'); d = real(d);
-        elseif endsWith(method,'imaginary'); d = 1i*imag(d);
+        elseif endsWith(method,'skewsymmetric'); d = 1i*imag(d);
         end
     end
   eVals = d; % These are the eigenvalues
