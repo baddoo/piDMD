@@ -100,7 +100,8 @@ elseif startsWith(method,'diagonal')
     else 
         d = ones(nx,2); % default is for a diagonal matrix
     end
-    Asparse = spalloc(nx,nx,sum(sum(abs(d))));
+    % Allocate cells to build sparse matrix
+    Icell = cell(1,nx); Jcell = cell(1,nx); Rcell = cell(1,nx);
     for j = 1:nx
     l1 = max(j-(d(j,1)-1),1); l2 = min(j+(d(j,2)-1),nx);
     C = X(l1:l2,:); b = Y(j,:); % preparing to solve min||Cx-b|| along each row
@@ -110,9 +111,11 @@ elseif startsWith(method,'diagonal')
             sol = b*pinv(C);
     elseif strcmp(method,'diagonaltls')
             sol = tls(C.',b.').';
-    end    
-    Asparse(j,l1:l2) = sol;
     end
+    Icell{j} = j*ones(1,1+l2-l1); Jcell{j} = l1:l2; Rcell{j} = sol;
+    end
+    Imat = cell2mat(Icell); Jmat = cell2mat(Jcell); Rmat = cell2mat(Rcell);
+    Asparse = sparse(Imat,Jmat,Rmat,nx,nx);
     A = @(v) Asparse*v;
 
     if nargout==2
