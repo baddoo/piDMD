@@ -1,6 +1,7 @@
 % A simple test for the conservative piDMD (i.e. the orthogonal Procrustes
 % problem)
 
+addpath('../src') % Path for piDMD
 rng(1); % Set random seed
 n = 10; % Number of features
 m = 1e3; % Number of samples
